@@ -2,13 +2,17 @@
 windows
 =======
 
+python - 3.11.4
+
 Need to download and install VLC - https://www.videolan.org/
 
+python extensions:
 pip install bleak
 pip install python-vlc
 
+hub to pc comms example - https://pybricks.com/projects/tutorials/wireless/hub-to-device/pc-communication/
 video player example - https://www.makeuseof.com/pygame-sprite-game-characters-create/
--> simpler example here: https://github.com/PaulleDemon/tkVideoPlayer/issues/2 
+-> simpler example here (but not tested): https://github.com/PaulleDemon/tkVideoPlayer/issues/2 
 async tkinter helper - https://pypi.org/project/async-tkinter-loop/
 
 """
