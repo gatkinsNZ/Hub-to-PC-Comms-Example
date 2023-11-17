@@ -9,7 +9,7 @@ Need to download and install VLC - https://www.videolan.org/
 python extensions:
 pip install bleak
 pip install python-vlc
-
+pip install pillow (probably allready installed)
 hub to pc comms example - https://pybricks.com/projects/tutorials/wireless/hub-to-device/pc-communication/
 video player example - https://www.makeuseof.com/pygame-sprite-game-characters-create/
 -> simpler example here (but not tested): https://github.com/PaulleDemon/tkVideoPlayer/issues/2 
@@ -22,9 +22,9 @@ print("Program Start")
 
 import tkinter as tk
 import vlc
-from tkinter import filedialog
+from tkinter import NE, NW, Label, PhotoImage, filedialog
 from datetime import timedelta
-
+from PIL import ImageTk, Image  
 import asyncio
 from bleak import BleakScanner, BleakClient
 
@@ -44,7 +44,7 @@ class MediaPlayerApp(tk.Tk):
         super().__init__()
         self.title("Media Player")
         self.geometry("800x600")
-        self.configure(bg="#f0f0f0")
+        self.configure(bg="black")
         self.initialize_player()        
     
     def initialize_player(self):
@@ -53,17 +53,19 @@ class MediaPlayerApp(tk.Tk):
         self.current_file = None
         self.playing_video = False
         self.video_paused = False
-        self.create_widgets()     
-
+        self.create_widgets()    
     def fll_play_video(self):
         self.stop()
         self.current_file = "C:/FLL/20220515_104244.mp4"
         self.time_label.config(text="00:00:00 / " + self.get_duration_str())
         self.play_video()
 
+
+
     def create_widgets(self):
-        self.media_canvas = tk.Canvas(self, bg="black", width=800, height=400)
+        self.media_canvas = tk.Canvas(self, bg="black", width=800, height=30)
         self.media_canvas.pack(pady=10, fill=tk.BOTH, expand=True)
+
         self.select_file_button = tk.Button(
             self,
             text="Select File",
@@ -76,7 +78,7 @@ class MediaPlayerApp(tk.Tk):
             text="00:00:00 / 00:00:00",
             font=("Arial", 12, "bold"),
             fg="#555555",
-            bg="#f0f0f0",
+            bg="black",
         )
         self.time_label.pack(pady=5)
         self.control_buttons_frame = tk.Frame(self, bg="#f0f0f0")
@@ -86,7 +88,7 @@ class MediaPlayerApp(tk.Tk):
             self.control_buttons_frame,
             text="Play",
             font=("Arial", 12, "bold"),
-            bg="#4CAF50",
+            bg="black",
             fg="white",
             command=self.play_video,
         )
@@ -95,7 +97,7 @@ class MediaPlayerApp(tk.Tk):
             self.control_buttons_frame,
             text="Pause",
             font=("Arial", 12, "bold"),
-            bg="#FF9800",
+            bg="black",
             fg="white",
             command=self.pause_video,
         )
@@ -104,7 +106,7 @@ class MediaPlayerApp(tk.Tk):
             self.control_buttons_frame,
             text="Stop",
             font=("Arial", 12, "bold"),
-            bg="#F44336",
+            bg="black",
             fg="white",
             command=self.stop,
         )
@@ -113,7 +115,7 @@ class MediaPlayerApp(tk.Tk):
             self.control_buttons_frame,
             text="Fast Forward",
             font=("Arial", 12, "bold"),
-            bg="#2196F3",
+            bg="black",
             fg="white",
             command=self.fast_forward,
         )
@@ -122,15 +124,16 @@ class MediaPlayerApp(tk.Tk):
             self.control_buttons_frame,
             text="Rewind",
             font=("Arial", 12, "bold"),
-            bg="#2196F3",
+            bg="black",
             fg="white",
             command=self.rewind,
         )
         self.rewind_button.pack(side=tk.LEFT, pady=5)
-        self.progress_bar = VideoProgressBar(
-            self, self.set_video_position, bg="#e0e0e0", highlightthickness=0
-        )
-        self.progress_bar.pack(fill=tk.X, padx=10, pady=5)
+        self.configure(bg = 'black')
+        self.img = ImageTk.PhotoImage(Image.open("C:/dev/FLL/Hub-to-PC-Comms-Example/Resources/background.png"))  # PIL solution
+        self.l=Label(image=self.img, borderwidth=0)
+        self.l.pack()
+
 
     def select_file(self):
         file_path = filedialog.askopenfilename(
