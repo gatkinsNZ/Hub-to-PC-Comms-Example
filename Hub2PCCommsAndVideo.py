@@ -37,10 +37,11 @@ UART_TX_CHAR_UUID = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E"
 # Replace this with the name of your hub if you changed
 # it when installing the Pybricks firmware.
 HUB_NAME = "Little Dawg"
-app = None
-device = None
-client = None
+nus = None
 rx_char = None
+client = None
+async def send(data):
+    await client.write_gatt_char(rx_char, data)
 
 class MediaPlayerApp(tk.Tk):
     
@@ -56,9 +57,8 @@ class MediaPlayerApp(tk.Tk):
     def VideoFinshed(self):
         app.current_video = 0
         print(app.current_video)
-        print("video finished")
-        send("video finished")
-        
+        print("video finished")   
+        send("video finished")     
     
 
     def initialize_player(self):
@@ -118,7 +118,6 @@ class MediaPlayerApp(tk.Tk):
         if sec < 10:
             return("{0}:0{1}".format(int(mins),int(sec)))
         return("{0}:{1}".format(int(mins),int(sec)))
-    
     def update_label(self):
         self.time -= 1
         new_text = self.time_convert(self.time)
@@ -164,6 +163,7 @@ def handle_rx(_, data: bytearray):
         elif data.find(b'Play_Video_4') >= 0:
             app.current_video = 4
         app.fll_play_video()
+    print(app.current_video)
 
 
 
@@ -173,9 +173,6 @@ async def main(app):
     # Find the device and initialize client.
     device = await BleakScanner.find_device_by_filter(hub_filter)
     client = BleakClient(device, disconnected_callback=handle_disconnect)
-
-    # Shorthand for sending some data to the hub.
-    
     
 
     try:
@@ -196,8 +193,7 @@ if __name__ == "__main__":
     app.after(2000, async_handler(main(app)))
     async_mainloop(app)
 
-async def send(data):
-    await client.write_gatt_char(rx_char, data)
+
 
 msg = "Roll a dice"
 print(msg)
@@ -206,4 +202,3 @@ print(msg)
 
 
 
-    
