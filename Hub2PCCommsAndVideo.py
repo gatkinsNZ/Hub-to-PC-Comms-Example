@@ -38,8 +38,9 @@ UART_TX_CHAR_UUID = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E"
 # it when installing the Pybricks firmware.
 HUB_NAME = "Little Dawg"
 app = None
-
 device = None
+client = None
+rx_char = None
 
 class MediaPlayerApp(tk.Tk):
     
@@ -56,6 +57,9 @@ class MediaPlayerApp(tk.Tk):
         app.current_video = 0
         print(app.current_video)
         print("video finished")
+        send("video finished")
+        
+    
 
     def initialize_player(self):
         self.instance = vlc.Instance()
@@ -162,36 +166,38 @@ def handle_rx(_, data: bytearray):
         app.fll_play_video()
 
 
-async def connect_to_hub():
+
+
+@async_handler
+async def main(app):
+    # Find the device and initialize client.
     device = await BleakScanner.find_device_by_filter(hub_filter)
-    print(device)
     client = BleakClient(device, disconnected_callback=handle_disconnect)
+
+    # Shorthand for sending some data to the hub.
+    
+    
+
     try:
         # Connect and get services.
         await client.connect()
         await client.start_notify(UART_TX_CHAR_UUID, handle_rx)
         nus = client.services.get_service(UART_SERVICE_UUID)
         rx_char = nus.get_characteristic(UART_RX_CHAR_UUID)
-
         # Tell user to start program on the hub.
         print("Start the program on the hub now with the button.")
 
-        
-
     except Exception as e:
+        # Handle exceptions.
         print(e)
-
-@async_handler
-async def main(app):
-    await connect_to_hub()
-
 
 
 if __name__ == "__main__":
     app.after(2000, async_handler(main(app)))
     async_mainloop(app)
 
-
+async def send(data):
+    await client.write_gatt_char(rx_char, data)
 
 msg = "Roll a dice"
 print(msg)
