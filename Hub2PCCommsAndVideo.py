@@ -9,6 +9,7 @@ Need to download and install VLC - https://www.videolan.org/
 python extensions:
 pip install bleak
 pip install python-vlc
+pip install async-tkinter-loop
 pip install pillow (probably allready installed)
 hub to pc comms example - https://pybricks.com/projects/tutorials/wireless/hub-to-device/pc-communication/
 video player example - https://www.makeuseof.com/python-video-media-player-how-to-build/
@@ -37,28 +38,24 @@ UART_TX_CHAR_UUID = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E"
 # Replace this with the name of your hub if you changed
 # it when installing the Pybricks firmware.
 HUB_NAME = "Little Dawg"
-nus = None
 rx_char = None
 client = None
-async def send(data):
-    await client.write_gatt_char(rx_char, data)
 
 class MediaPlayerApp(tk.Tk):
     
     def __init__(self):
         super().__init__()
-        self.current_video = 1
         self.title("BoardFusion")
         self.geometry("800x600")
         self.configure(bg="black")
         self.initialize_player()  
-        self.initialize_event_handler()     
+        self.initialize_event_handler()  
 
     def VideoFinshed(self):
+        print("Video " + str(app.current_video) + " finished")
+        hubmessage = "video" + str(app.current_video) + "_finished"
+        send(str.encode(hubmessage))
         app.current_video = 0
-        print(app.current_video)
-        print("video finished")   
-        send("video finished")     
     
 
     def initialize_player(self):
@@ -74,19 +71,24 @@ class MediaPlayerApp(tk.Tk):
         events = self.media_player.event_manager()
         events.event_attach(vlc.EventType.MediaPlayerEndReached, self.VideoFinshed.__func__)
 
-
     def fll_play_video(self):
         print(self.current_video)
         if self.current_video == 1:
             self.stop()
             self.current_file = r"Resources/placeholder_video.mp4"
             self.play_video()
-        elif self.current_video ==2:
-            pass
+        elif self.current_video == 2:
+            self.stop()
+            self.current_file = r"Resources/boardgame_vid2.mp4"
+            self.play_video()
         elif self.current_video == 3:
-            pass
+            self.stop()
+            self.current_file = r"Resources/boardgame_vid3.mp4"
+            self.play_video()
         elif self.current_video == 4:
-            pass
+            self.stop()
+            self.current_file = r"Resources/boardgame_vid4.mp4"
+            self.play_video()
     
     
 
@@ -100,17 +102,22 @@ class MediaPlayerApp(tk.Tk):
         self.l.pack()
         self.start_button = Button(self, text="BEGIN", command=self.start, fg='white', bg='black', font=("Arial", 60, "bold"), borderwidth=0, pady= 100)
         self.start_button.pack()
-
-
+        self.main_screen = False
 
    
     def start(self):
-       # self.current_video = 1
-        self.media_canvas.pack(fill=tk.BOTH, expand=True)
-        self.update_label()
-        self.fll_play_video()
-        self.begin = time.time()
-        self.start_button.destroy()
+        if self.main_screen == False:
+            self.current_video = 1
+            self.media_canvas.pack(fill=tk.BOTH, expand=True)
+            self.main_screen = True
+            #self.update_label()
+            self.fll_play_video()
+        else:
+            self.current_video = 2
+            self.begin = time.time()
+            self.update_label()
+            self.start_button.destroy()
+            self.fll_play_video()
 
     def time_convert(self, sec):
         mins = sec // 60
@@ -153,24 +160,36 @@ def handle_disconnect(_):
 
 def handle_rx(_, data: bytearray):
     print("Received:", data)
-    if app.current_video == 0:
-        if data.find(b'Play_Video_1') >= 0:
-            app.current_video = 1
-        elif data.find(b'Play_Video_2') >= 0:
-            app.current_video = 2
-        elif data.find(b'Play_Video_3') >= 0:
-            app.current_video = 3
-        elif data.find(b'Play_Video_4') >= 0:
-            app.current_video = 4
-        app.fll_play_video()
+    #if app.current_video == 0:
+    if data.find(b'Play_Video_2') >= 0:
+        app.current_video = 2
+    elif data.find(b'Play_Video_3') >= 0:
+        app.current_video = 3
+    elif data.find(b'Play_Video_4') >= 0:
+        app.current_video = 4
+    app.fll_play_video()
     print(app.current_video)
 
 
+def send(data):
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    print("Calling send")
+    data = loop.run_until_complete(sendAsync(data))
+    loop.close
+
+async def sendAsync(data):
+    print("Sending to hub: " + str(data))
+    await client.write_gatt_char(rx_char, data)
 
 
 @async_handler
 async def main(app):
+
     # Find the device and initialize client.
+    global client
+    global rx_char
+
     device = await BleakScanner.find_device_by_filter(hub_filter)
     client = BleakClient(device, disconnected_callback=handle_disconnect)
     
@@ -195,7 +214,7 @@ if __name__ == "__main__":
 
 
 
-msg = "Roll a dice"
+msg = "Demo finished"
 print(msg)
 
 

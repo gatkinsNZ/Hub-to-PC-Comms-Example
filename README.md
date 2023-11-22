@@ -10,7 +10,9 @@
 - To run
   - Install VS code Python extension
   - Need to download and install VLC - https://www.videolan.org/
-  - Install Python extensions:
+  - Install Python extensions (through Terminal):
       - pip install bleak
       - pip install python-vlc
+      - pip install async-tkinter-loop
       - pip install pillow
+  - restart VS Code
