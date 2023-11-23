@@ -137,11 +137,13 @@ while True:
                 spinComplete = True
                 hub.display.text(str(rolledNumber),2000)
                 secondStage = False
+                stdout.buffer.write(b"player_moved(rolledNumber)")
 
                 thirdStage = True
                 stageStarted = True
     
                 while thirdStage == True:
+                    card = reader.color()
                     if stageStarted == True:
                         #print("Stage 3 Iniated")
                         stageStarted = False

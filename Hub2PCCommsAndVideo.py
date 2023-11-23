@@ -75,7 +75,7 @@ class MediaPlayerApp(tk.Tk):
         print(self.current_video)
         if self.current_video == 1:
             self.stop()
-            self.current_file = r"Resources/placeholder_video.mp4"
+            self.current_file = r"Resources/titlescreen_vid.mp4"
             self.play_video()
         elif self.current_video == 2:
             self.stop()
