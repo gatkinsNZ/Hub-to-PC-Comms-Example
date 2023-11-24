@@ -100,7 +100,8 @@ class MediaPlayerApp(tk.Tk):
         self.img = ImageTk.PhotoImage(Image.open(r"Resources/title.png"))  # PIL solution
         self.l=Label(image=self.img, borderwidth=0)
         self.l.pack()
-        self.start_button = Button(self, text="BEGIN", command=self.start, fg='white', bg='black', font=("Arial", 60, "bold"), borderwidth=0, pady= 100)
+        self.media_canvas.pack(fill=tk.BOTH, expand=True)
+        self.start_button = Button(self, text="BEGIN", command=self.start, fg='white', bg='black', font=("Arial", 20, "bold"), borderwidth=0, pady= 100)
         self.start_button.pack()
         self.main_screen = False
 
@@ -108,7 +109,6 @@ class MediaPlayerApp(tk.Tk):
     def start(self):
         if self.main_screen == False:
             self.current_video = 1
-            self.media_canvas.pack(fill=tk.BOTH, expand=True)
             self.main_screen = True
             #self.update_label()
             self.fll_play_video()
