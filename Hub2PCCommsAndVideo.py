@@ -51,7 +51,7 @@ class MediaPlayerApp(tk.Tk):
         self.initialize_player()  
         self.initialize_event_handler()  
 
-    def VideoFinshed(self):
+    def VideoFinished(event):
         print("Video " + str(app.current_video) + " finished")
         hubmessage = "video" + str(app.current_video) + "_finished"
         send(str.encode(hubmessage))
@@ -61,6 +61,8 @@ class MediaPlayerApp(tk.Tk):
     def initialize_player(self):
         self.instance = vlc.Instance()
         self.media_player = self.instance.media_player_new()
+        self.media_player.video_set_mouse_input(False)
+        self.media_player.video_set_key_input(False)
         self.time = 3600
         self.current_file = None
         self.playing_video = False
@@ -69,8 +71,7 @@ class MediaPlayerApp(tk.Tk):
     
     def initialize_event_handler(self):
         events = self.media_player.event_manager()
-        events.event_attach(vlc.EventType.MediaPlayerEndReached, self.VideoFinshed.__func__)
-
+        events.event_attach(vlc.EventType.MediaPlayerEndReached, self.VideoFinished.__func__)
     def fll_play_video(self):
         print(self.current_video)
         if self.current_video == 1:
@@ -97,28 +98,31 @@ class MediaPlayerApp(tk.Tk):
         self.time_label=Label(self, text='60:00', fg='white', bg='black', font=("Arial", 60, "bold"))
         self.time_label.place(relx=0.85, rely=0.02)
         self.configure(bg = 'black')
-        self.img = ImageTk.PhotoImage(Image.open(r"Resources/title.png"))  # PIL solution
-        self.l=Label(image=self.img, borderwidth=0)
-        self.l.pack()
         self.media_canvas.pack(fill=tk.BOTH, expand=True)
-        self.start_button = Button(self, text="BEGIN", command=self.start, fg='white', bg='black', font=("Arial", 20, "bold"), borderwidth=0, pady= 100)
-        self.start_button.pack()
+        self.img_two = ImageTk.PhotoImage(Image.open(r"Resources/start_menu.jpg"))
+        self.start_button = Button(self, command=self.start, borderwidth=0, image= self.img_two)
+        self.start_button.pack(expand=True)
         self.main_screen = False
+        self.spin_label = Label(self, borderwidth=0, text='Not spun yet', font=("Arial", 60, "bold"), fg='white', bg='black')
+
+    def start_game(event):
+        app.current_video = 2
+        app.begin = time.time()
+        #app.update_label()
+        app.fll_play_video()
 
    
     def start(self):
-        if self.main_screen == False:
+        print('start')
+        self.start_button.destroy()
+        if self.main_screen == False:        
+            self.media_canvas.bind("<Button-1>", self.start_game.__func__)
             self.current_video = 1
             self.main_screen = True
-            #self.update_label()
-            self.fll_play_video()
-        else:
-            self.current_video = 2
-            self.begin = time.time()
             self.update_label()
-            self.start_button.destroy()
+            #self.frame.pack()
             self.fll_play_video()
-
+            
     def time_convert(self, sec):
         mins = sec // 60
         sec = sec % 60
@@ -167,6 +171,12 @@ def handle_rx(_, data: bytearray):
         app.current_video = 3
     elif data.find(b'Play_Video_4') >= 0:
         app.current_video = 4
+        app.spin_label.destroy()
+    else:
+        string = data.decode()
+        string = string[12]
+        app.spin_label = Label(app, borderwidth=0, text="You spun a " + string + '!', font=("Arial", 80, "bold"), fg='white', bg='black')
+        app.spin_label.pack(expand=True)
     app.fll_play_video()
     print(app.current_video)
 
