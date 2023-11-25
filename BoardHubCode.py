@@ -54,8 +54,6 @@ while True:
         # Optional: Do something here.
         pressed = hub.buttons.pressed()
 
-        hub.display.text("Hi",500)
-
         message = stdin.buffer.read(15)
         #hub.display.text(message,500)
 
@@ -137,7 +135,7 @@ while True:
                 spinComplete = True
                 hub.display.text(str(rolledNumber),2000)
                 secondStage = False
-                stdout.buffer.write(b"player_moved(rolledNumber)")
+                stdout.buffer.write(b"player_moved"+str(rolledNumber))
 
                 thirdStage = True
                 stageStarted = True
