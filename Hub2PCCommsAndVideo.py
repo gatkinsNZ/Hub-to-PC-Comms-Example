@@ -45,6 +45,7 @@ class MediaPlayerApp(tk.Tk):
     
     def __init__(self):
         super().__init__()
+        #self.attributes('-fullscreen', True)
         self.title("BoardFusion")
         self.geometry("800x600")
         self.configure(bg="black")
@@ -72,6 +73,7 @@ class MediaPlayerApp(tk.Tk):
     def initialize_event_handler(self):
         events = self.media_player.event_manager()
         events.event_attach(vlc.EventType.MediaPlayerEndReached, self.VideoFinished.__func__)
+
     def fll_play_video(self):
         print(self.current_video)
         if self.current_video == 1:
@@ -99,17 +101,18 @@ class MediaPlayerApp(tk.Tk):
         self.time_label.place(relx=0.85, rely=0.02)
         self.configure(bg = 'black')
         self.media_canvas.pack(fill=tk.BOTH, expand=True)
-        self.img_two = ImageTk.PhotoImage(Image.open(r"Resources/start_menu.jpg"))
+        self.img_two = ImageTk.PhotoImage(Image.open(r"Resources/start_menu.jpg").resize((1182, 664), Image.ANTIALIAS))
         self.start_button = Button(self, command=self.start, borderwidth=0, image= self.img_two)
-        self.start_button.pack(expand=True)
+        self.start_button.pack()
         self.main_screen = False
         self.spin_label = Label(self, borderwidth=0, text='Not spun yet', font=("Arial", 60, "bold"), fg='white', bg='black')
 
     def start_game(event):
         app.current_video = 2
         app.begin = time.time()
-        #app.update_label()
+        app.update_label()
         app.fll_play_video()
+        app.media_canvas.unbind("<Button-1>", app.start_game.__func__)
 
    
     def start(self):
@@ -119,7 +122,6 @@ class MediaPlayerApp(tk.Tk):
             self.media_canvas.bind("<Button-1>", self.start_game.__func__)
             self.current_video = 1
             self.main_screen = True
-            self.update_label()
             #self.frame.pack()
             self.fll_play_video()
             
@@ -177,6 +179,7 @@ def handle_rx(_, data: bytearray):
         string = string[12]
         app.spin_label = Label(app, borderwidth=0, text="You spun a " + string + '!', font=("Arial", 80, "bold"), fg='white', bg='black')
         app.spin_label.pack(expand=True)
+        app.current_video = 0
     app.fll_play_video()
     print(app.current_video)
 
