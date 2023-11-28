@@ -82,15 +82,15 @@ class MediaPlayerApp(tk.Tk):
             self.play_video()
         elif self.current_video == 2:
             self.stop()
-            self.current_file = r"Resources/boardgame_vid2.mp4"
+            self.current_file = r"Resources/boardgame_vid2.mov"
             self.play_video()
         elif self.current_video == 3:
             self.stop()
-            self.current_file = r"Resources/boardgame_vid3.mp4"
+            self.current_file = r"Resources/boardgame_vid3.mov"
             self.play_video()
         elif self.current_video == 4:
             self.stop()
-            self.current_file = r"Resources/boardgame_vid4.mp4"
+            self.current_file = r"Resources/boardgame_vid4.mov"
             self.play_video()
     
     
