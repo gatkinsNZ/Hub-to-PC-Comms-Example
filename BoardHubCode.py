@@ -14,7 +14,7 @@ hub = PrimeHub()
 hub.light.on(Color(h=20, s=140, v=80))
 
 presser = ForceSensor(Port.C)
-spinner = ColorSensor(Port.B)
+spinner = ColorSensor(Port.E)
 reader = ColorSensor(Port.A)
 
 Color.BLACK = Color(h=0, s=0, v=0)
@@ -133,9 +133,9 @@ while True:
 
                 #print("You Spun a " + str(rolledNumber) + "!")
                 spinComplete = True
-                hub.display.text(str(rolledNumber),2000)
-                secondStage = False
                 stdout.buffer.write(b"player_moved"+str(rolledNumber))
+                secondStage = False
+                hub.display.text(str(rolledNumber),2000)
 
                 thirdStage = True
                 stageStarted = True

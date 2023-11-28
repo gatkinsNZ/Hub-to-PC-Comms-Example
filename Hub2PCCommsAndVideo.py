@@ -7,10 +7,10 @@ python - 3.11.4
 Need to download and install VLC - https://www.videolan.org/
 
 python extensions:
-pip install bleak
-pip install python-vlc
-pip install async-tkinter-loop
-pip install pillow (probably allready installed)
+pip install bleak 0.21.1
+pip install python-vlc 3.0.20123
+pip install async-tkinter-loop 0.9.2
+pip install pillow (probably allready installed) 10.1.0???
 hub to pc comms example - https://pybricks.com/projects/tutorials/wireless/hub-to-device/pc-communication/
 video player example - https://www.makeuseof.com/python-video-media-player-how-to-build/
 
@@ -101,7 +101,7 @@ class MediaPlayerApp(tk.Tk):
         self.time_label.place(relx=0.85, rely=0.02)
         self.configure(bg = 'black')
         self.media_canvas.pack(fill=tk.BOTH, expand=True)
-        self.img_two = ImageTk.PhotoImage(Image.open(r"Resources/start_menu.jpg").resize((1182, 664), Image.ANTIALIAS))
+        self.img_two = ImageTk.PhotoImage(Image.open(r"Resources/start_menu.jpg").resize((1182, 664), Image.Resampling.LANCZOS))
         self.start_button = Button(self, command=self.start, borderwidth=0, image= self.img_two)
         self.start_button.pack()
         self.main_screen = False
