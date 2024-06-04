@@ -4,6 +4,9 @@ from pybricks.parameters import Button, Color, Direction, Port, Side, Stop
 from pybricks.robotics import DriveBase
 from pybricks.tools import wait, StopWatch
 
+#NOTE: need 3.2.3 firmware for below PC to hub comms to work
+#get 3.2.3 firmware from: https://github.com/pybricks/pybricks-micropython/releases/tag/v3.2.3
+
 # Standard MicroPython modules
 from usys import stdin, stdout
 from uselect import poll
