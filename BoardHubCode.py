@@ -45,18 +45,18 @@ card = reader.color()
 keyboard = poll()
 keyboard.register(stdin)
 
-hub.light.on(Color.RED)
+hub.light.on(Color.GREEN)
 
 #print("Running...")
 
 while True:
-    
+      
     # Optional: Check available input.
     #while not keyboard.poll(0):
 
         # Optional: Do something here.
         pressed = hub.buttons.pressed()
-
+    
         message = stdin.buffer.read(15)
         #hub.display.text(message,500)
 
@@ -82,7 +82,7 @@ while True:
                     firstStage = False
 
         if message == b"video3_finished":
-            hub.light.on(Color.GREEN)
+            hub.light.on(Color.RED)
             secondStage = True
             stageStarted = True
         
@@ -142,14 +142,29 @@ while True:
 
                 thirdStage = True
                 stageStarted = True
+       
+
+        while thirdStage == True:
+            card = reader.color()
+            cardPlayed = "None"
     
-                while thirdStage == True:
-                    card = reader.color()
-                    if stageStarted == True:
-                        #print("Stage 3 Iniated")
-                        stageStarted = False
-                        hub.light.on(Color.YELLOW)
-                    if card == Color.RED:
-                        stdout.buffer.write(b"Play_Video_4")
-                        hub.light.on(Color.RED)
-                        thirdStage = False           
+            if stageStarted == True:
+                #print("Stage 3 Initiated")
+                stageStarted = False
+                hub.light.on(Color.PURPLE)
+            elif card == Color.RED:
+                cardPlayed = "Red"
+                hub.light.on(Color.RED)
+            elif card == Color.BLUE:
+                cardPlayed = "Blue"
+                hub.light.on(Color.BLUE)
+            elif card == Color.YELLOW:
+                cardPlayed = "Yellow"
+                hub.light.on(Color.YELLOW)
+
+            if cardPlayed != "None":
+                #print(str(cardPlayed)+"Card Played")
+                stdout.buffer.write(b"Play_Video_"+str(cardPlayed)+"Card")
+                cardPlayed = "None"
+                thirdStage = False 
+                                  

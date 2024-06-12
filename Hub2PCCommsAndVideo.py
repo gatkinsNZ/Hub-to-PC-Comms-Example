@@ -47,7 +47,7 @@ class MediaPlayerApp(tk.Tk):
         super().__init__()
         #self.attributes('-fullscreen', True)
         self.title("BoardFusion")
-        self.geometry("800x600")
+        self.geometry("800x600")#1920x1080
         self.configure(bg="black")
         self.initialize_player()  
         self.initialize_event_handler()  
@@ -82,18 +82,44 @@ class MediaPlayerApp(tk.Tk):
             self.play_video()
         elif self.current_video == 2:
             self.stop()
-            self.current_file = r"Resources/boardgame_vid2.mov"
+            self.current_file = r"Resources/New Videos/vid_IntroShort.mp4"
             self.play_video()
         elif self.current_video == 3:
             self.stop()
-            self.current_file = r"Resources/boardgame_vid3.mov"
+            self.current_file = r"Resources/New Videos/vid_SpinTheWheel.mp4"
             self.play_video()
         elif self.current_video == 4:
             self.stop()
-            self.current_file = r"Resources/boardgame_vid4.mov"
+            self.current_file = r"Resources/New Videos/vid_Spun1.mp4"
             self.play_video()
-    
-    
+        elif self.current_video == 5:
+            self.stop()
+            self.current_file = r"Resources/New Videos/vid_Spun2.mp4"
+            self.play_video()
+        elif self.current_video == 6:
+            self.stop()
+            self.current_file = r"Resources/New Videos/vid_Spun3.mp4"
+            self.play_video()
+        elif self.current_video == 7:
+            self.stop()
+            self.current_file = r"Resources/New Videos/vid_Spun4.mp4"
+            self.play_video()
+        elif self.current_video == 8:
+            self.stop()
+            self.current_file = r"Resources/New Videos/vid_Spun5.mp4"
+            self.play_video()
+        elif self.current_video == 9:
+            self.stop()
+            self.current_file = r"Resources/New Videos/vid_CardBlue.mp4"
+            self.play_video()
+        elif self.current_video == 10:
+            self.stop()
+            self.current_file = r"Resources/New Videos/vid_CardYellow.mp4"
+            self.play_video()
+        elif self.current_video == 11:
+            self.stop()
+            self.current_file = r"Resources/New Videos/vid_CardRed.mp4"
+            self.play_video() 
 
     def create_widgets(self):     
         self.media_canvas = tk.Canvas(self, bg="black", width=800, height=30, highlightthickness=0)
@@ -137,7 +163,7 @@ class MediaPlayerApp(tk.Tk):
         self.time_label.configure(text=new_text)
         self.after(1000, self.update_label)
         self.time_label.place(relx=0.85, rely=0.02)
-        print(new_text)
+        #print(new_text)
 
 
     def play_video(self):
@@ -173,13 +199,22 @@ def handle_rx(_, data: bytearray):
         app.current_video = 3
     elif data.find(b'Play_Video_4') >= 0:
         app.current_video = 4
-        app.spin_label.destroy()
+        #app.spin_label.destroy()
+    elif data.find(b'Play_Video_BlueCard') >= 0:
+        app.current_video = 9
+    elif data.find(b'Play_Video_YellowCar') >= 0:
+        app.current_video = 10
+    elif data.find(b'Play_Video_RedCard') >= 0:
+        app.current_video = 11
     else:
-        string = data.decode()
-        string = string[12]
+        spinNumber = data.decode()
+        spinNumber = spinNumber[12]
+        app.current_video = (3+int(spinNumber))
+        """
         app.spin_label = Label(app, borderwidth=0, text="You spun a " + string + '!', font=("Arial", 80, "bold"), fg='white', bg='black')
         app.spin_label.pack(expand=True)
         app.current_video = 0
+        """
     app.fll_play_video()
     print(app.current_video)
 
