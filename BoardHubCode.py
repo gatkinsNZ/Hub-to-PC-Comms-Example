@@ -67,6 +67,7 @@ while True:
                 wait(10)
 
         if message == b"video2_finished":
+            stdout.buffer.write(b"Start_Timer")
             hub.light.on(Color.GREEN)
             firstStage = True
             stageStarted = True
@@ -140,10 +141,10 @@ while True:
                 secondStage = False
                 hub.display.text(str(rolledNumber),2000)
 
-                thirdStage = True
-                stageStarted = True
-       
-
+        if message == b"video4_finished" or message == b"video5_finished" or message == b"video6_finished" or message == b"video7_finished" or message == b"video8_finished":
+            thirdStage = True
+            stageStarted = True
+            
         while thirdStage == True:
             card = reader.color()
             cardPlayed = "None"

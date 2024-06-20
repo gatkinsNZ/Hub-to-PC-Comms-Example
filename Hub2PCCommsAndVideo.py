@@ -30,6 +30,7 @@ import time
 import asyncio
 from bleak import BleakScanner, BleakClient
 from async_tkinter_loop import async_handler, async_mainloop
+import msvcrt
 
 UART_SERVICE_UUID = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E"
 UART_RX_CHAR_UUID = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E"
@@ -40,14 +41,15 @@ UART_TX_CHAR_UUID = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E"
 HUB_NAME = "Little Dawg"
 rx_char = None
 client = None
+mediaCanvasButton = None
 
 class MediaPlayerApp(tk.Tk):
     
     def __init__(self):
         super().__init__()
-        #self.attributes('-fullscreen', True)
+        self.attributes('-fullscreen', True)
         self.title("BoardFusion")
-        self.geometry("800x600")#1920x1080
+        self.geometry("1920x1080")#800x600
         self.configure(bg="black")
         self.initialize_player()  
         self.initialize_event_handler()  
@@ -75,7 +77,7 @@ class MediaPlayerApp(tk.Tk):
         events.event_attach(vlc.EventType.MediaPlayerEndReached, self.VideoFinished.__func__)
 
     def fll_play_video(self):
-        print(self.current_video)
+        #print(self.current_video)
         if self.current_video == 1:
             self.stop()
             self.current_file = r"Resources/titlescreen_vid.mp4"
@@ -84,6 +86,7 @@ class MediaPlayerApp(tk.Tk):
             self.stop()
             self.current_file = r"Resources/New Videos/vid_IntroShort.mp4"
             self.play_video()
+            #self.after(3000, self.start_timer)
         elif self.current_video == 3:
             self.stop()
             self.current_file = r"Resources/New Videos/vid_SpinTheWheel.mp4"
@@ -123,8 +126,7 @@ class MediaPlayerApp(tk.Tk):
 
     def create_widgets(self):     
         self.media_canvas = tk.Canvas(self, bg="black", width=800, height=30, highlightthickness=0)
-        self.time_label=Label(self, text='60:00', fg='white', bg='black', font=("Arial", 60, "bold"))
-        self.time_label.place(relx=0.85, rely=0.02)
+        #self.time_label=Label(self, text='60:00', fg='white', bg='black', font=("Arial", 60, "bold"))
         self.configure(bg = 'black')
         self.media_canvas.pack(fill=tk.BOTH, expand=True)
         self.img_two = ImageTk.PhotoImage(Image.open(r"Resources/start_menu.jpg").resize((1182, 664), Image.Resampling.LANCZOS))
@@ -134,38 +136,43 @@ class MediaPlayerApp(tk.Tk):
         self.spin_label = Label(self, borderwidth=0, text='Not spun yet', font=("Arial", 60, "bold"), fg='white', bg='black')
 
     def start_game(event):
+        app.media_canvas.unbind("<Button-1>", mediaCanvasButton)
         app.current_video = 2
-        app.begin = time.time()
-        app.update_label()
         app.fll_play_video()
-        app.media_canvas.unbind("<Button-1>", app.start_game.__func__)
+        
 
    
     def start(self):
         print('start')
         self.start_button.destroy()
         if self.main_screen == False:        
-            self.media_canvas.bind("<Button-1>", self.start_game.__func__)
+            mediaCanvasButton = self.media_canvas.bind("<Button-1>", self.start_game.__func__)
             self.current_video = 1
             self.main_screen = True
             #self.frame.pack()
             self.fll_play_video()
-            
+
+    def start_timer(self):
+        print("Timer start")
+        self.time_label=Label(text='60:00', fg='white', bg='black', font=("Arial", 60, "bold"))
+        self.time_label.place(relx=0.82, rely=0.02)
+        app.begin = time.time()
+        app.update_timer()
+    
+    def update_timer(self):
+        self.time -= 1
+        new_text = self.time_convert(self.time)
+        self.time_label.configure(text=new_text)
+        self.after(1000, self.update_timer)
+        self.time_label.place(relx=0.82, rely=0.02)
+
     def time_convert(self, sec):
         mins = sec // 60
         sec = sec % 60
         if sec < 10:
             return("{0}:0{1}".format(int(mins),int(sec)))
-        return("{0}:{1}".format(int(mins),int(sec)))
-    def update_label(self):
-        self.time -= 1
-        new_text = self.time_convert(self.time)
-        self.time_label.configure(text=new_text)
-        self.after(1000, self.update_label)
-        self.time_label.place(relx=0.85, rely=0.02)
-        #print(new_text)
-
-
+        return("{0}:{1}".format(int(mins),int(sec)))  
+        
     def play_video(self):
         if not self.playing_video:
             media = self.instance.media_new(self.current_file)
@@ -199,25 +206,29 @@ def handle_rx(_, data: bytearray):
         app.current_video = 3
     elif data.find(b'Play_Video_4') >= 0:
         app.current_video = 4
-        #app.spin_label.destroy()
     elif data.find(b'Play_Video_BlueCard') >= 0:
         app.current_video = 9
     elif data.find(b'Play_Video_YellowCar') >= 0:
         app.current_video = 10
     elif data.find(b'Play_Video_RedCard') >= 0:
         app.current_video = 11
+    elif data.find(b'Start_Timer') >= 0:
+        app.start_timer()
     else:
         spinNumber = data.decode()
         spinNumber = spinNumber[12]
         app.current_video = (3+int(spinNumber))
-        """
-        app.spin_label = Label(app, borderwidth=0, text="You spun a " + string + '!', font=("Arial", 80, "bold"), fg='white', bg='black')
-        app.spin_label.pack(expand=True)
-        app.current_video = 0
-        """
-    app.fll_play_video()
-    print(app.current_video)
 
+        media_canvas = tk.Canvas(bg="black", width=800, height=30, highlightthickness=0)
+        app.spin_label=Label(text="You spun a " + str(spinNumber) + "!", fg='white', bg='black', font=("Arial", 60, "bold"))
+        app.spin_label.after(1000, showSpinNumber)
+        
+    app.fll_play_video()
+    #print(app.current_video)
+
+def showSpinNumber():
+    app.spin_label.place(relx=0.3, rely=0.81)
+    app.spin_label.after(6000, app.spin_label.destroy)
 
 def send(data):
     loop = asyncio.new_event_loop()
@@ -226,6 +237,7 @@ def send(data):
     data = loop.run_until_complete(sendAsync(data))
     loop.close
 
+
 async def sendAsync(data):
     print("Sending to hub: " + str(data))
     await client.write_gatt_char(rx_char, data)
@@ -233,10 +245,11 @@ async def sendAsync(data):
 
 @async_handler
 async def main(app):
-
+    
     # Find the device and initialize client.
     global client
     global rx_char
+    global mediaCanvasButton
 
     device = await BleakScanner.find_device_by_filter(hub_filter)
     client = BleakClient(device, disconnected_callback=handle_disconnect)
