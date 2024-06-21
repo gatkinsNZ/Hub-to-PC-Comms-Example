@@ -129,11 +129,16 @@ class MediaPlayerApp(tk.Tk):
         #self.time_label=Label(self, text='60:00', fg='white', bg='black', font=("Arial", 60, "bold"))
         self.configure(bg = 'black')
         self.media_canvas.pack(fill=tk.BOTH, expand=True)
-        self.img_two = ImageTk.PhotoImage(Image.open(r"Resources/start_menu.jpg").resize((1182, 664), Image.Resampling.LANCZOS))
+        self.img_two = ImageTk.PhotoImage(Image.open(r"Resources/start_menu.jpg").resize((1540, 840), Image.Resampling.LANCZOS))
         self.start_button = Button(self, command=self.start, borderwidth=0, image= self.img_two)
         self.start_button.pack()
         self.main_screen = False
         self.spin_label = Label(self, borderwidth=0, text='Not spun yet', font=("Arial", 60, "bold"), fg='white', bg='black')
+
+    def final_image(event):
+        photo = tk.PhotoImage(r'Resources/board_fusion.jpg')
+        image = tk.Label(image=photo)
+        image.pack()
 
     def start_game(event):
         app.media_canvas.unbind("<Button-1>", mediaCanvasButton)
@@ -208,10 +213,13 @@ def handle_rx(_, data: bytearray):
         app.current_video = 4
     elif data.find(b'Play_Video_BlueCard') >= 0:
         app.current_video = 9
+        app.final_image()
     elif data.find(b'Play_Video_YellowCar') >= 0:
         app.current_video = 10
+        app.final_image()
     elif data.find(b'Play_Video_RedCard') >= 0:
         app.current_video = 11
+        app.final_image()
     elif data.find(b'Start_Timer') >= 0:
         app.start_timer()
     else:
