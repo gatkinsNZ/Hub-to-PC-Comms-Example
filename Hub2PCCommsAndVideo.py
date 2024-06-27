@@ -129,7 +129,7 @@ class MediaPlayerApp(tk.Tk):
         #self.time_label=Label(self, text='60:00', fg='white', bg='black', font=("Arial", 60, "bold"))
         self.configure(bg = 'black')
         self.media_canvas.pack(fill=tk.BOTH, expand=True)
-        self.img_two = ImageTk.PhotoImage(Image.open(r"Resources/start_menu.jpg").resize((1540, 840), Image.Resampling.LANCZOS))
+        self.img_two = ImageTk.PhotoImage(Image.open(r"Resources/start_menu.png").resize((1540, 840), Image.Resampling.LANCZOS))
         self.start_button = Button(self, command=self.start, borderwidth=0, image= self.img_two)
         self.start_button.pack()
         self.main_screen = False
