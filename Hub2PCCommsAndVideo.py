@@ -2,15 +2,15 @@
 windows
 =======
 
-python - 3.11.4
+python - 3.11.9 - when you run in VSCode it will ask to install - installs pip 3.11_3ble
 
 Need to download and install VLC - https://www.videolan.org/
 
-python extensions:
-pip install bleak 0.21.1
-pip install python-vlc 3.0.20123
-pip install async-tkinter-loop 0.9.2
-pip install pillow (probably allready installed) 10.1.0???
+python extensions: - can use pip show bleak to get version installed
+pip install bleak==0.22.1
+pip install python-vlc==3.0.20123
+pip install async-tkinter-loop==0.9.3
+pip install pillow==10.3.0
 hub to pc comms example - https://pybricks.com/projects/tutorials/wireless/hub-to-device/pc-communication/
 video player example - https://www.makeuseof.com/python-video-media-player-how-to-build/
 
