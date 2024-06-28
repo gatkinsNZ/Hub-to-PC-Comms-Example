@@ -2,7 +2,7 @@
 windows
 =======
 
-python - 3.11.9 - when you run in VSCode it will ask to install - installs pip 3.11_3ble
+python - 3.11.9 - when you run in VSCode it will ask to install - installs pip 3.11_3
 
 Need to download and install VLC - https://www.videolan.org/
 
