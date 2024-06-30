@@ -91,55 +91,55 @@ while True:
                 if stageStarted == True:
                     #print("Stage 2 Iniated")
                     stageStarted = False
-                spinStarted = False
-                spinFinished = False
-                colourCheck = 0
+                    spinStarted = False
+                    spinFinished = False
+                    colourCheck = 0
 
-                while not spinStarted:
-                    currentColour = spinner.color()
-                    wait(500)
-                    prevColour = currentColour
-                    currentColour = spinner.color()
-                    #print("StartSpin Check: Prev " + str(prevColour) + " Cur" + str(currentColour))
+                    while not spinStarted:
+                        currentColour = spinner.color()
+                        wait(500)
+                        prevColour = currentColour
+                        currentColour = spinner.color()
+                        #print("StartSpin Check: Prev " + str(prevColour) + " Cur" + str(currentColour))
 
-                    if prevColour != currentColour:
-                        spinStarted = True
-                        #print("Spin Started")
-                        
-                        
-                        while colourCheck < 4:
-                            currentColour = spinner.color()
-                            wait(250)
-                            prevColour = currentColour
-                            currentColour = spinner.color()
-                            #print("FinishSpin Check: Prev " + str(prevColour) + " Cur" + str(currentColour))
+                        if prevColour != currentColour:
+                            spinStarted = True
+                            #print("Spin Started")
+                            
+                            
+                            while colourCheck < 4:
+                                currentColour = spinner.color()
+                                wait(250)
+                                prevColour = currentColour
+                                currentColour = spinner.color()
+                                #print("FinishSpin Check: Prev " + str(prevColour) + " Cur" + str(currentColour))
 
-                            if prevColour == currentColour:
-                                colourCheck = colourCheck + 1
-                                #print(colourCheck)
-                            if prevColour != currentColour:
-                                colourCheck = 0
-            
-                #print("Spin Finished")
-                #print(currentColour)
+                                if prevColour == currentColour:
+                                    colourCheck = colourCheck + 1
+                                    #print(colourCheck)
+                                if prevColour != currentColour:
+                                    colourCheck = 0
+                
+                    #print("Spin Finished")
+                    #print(currentColour)
 
-                rolledNumber = 4
-                if currentColour == Color.BLACK:
-                    rolledNumber = 1
-                elif currentColour == Color.PURPLE:
-                    rolledNumber = 2
-                elif currentColour == Color.GREEN:
-                    rolledNumber = 3
-                elif currentColour == Color.RED:
                     rolledNumber = 4
-                elif currentColour == Color.BLUE:
-                    rolledNumber = 5
+                    if currentColour == Color.BLACK:
+                        rolledNumber = 1
+                    elif currentColour == Color.PURPLE:
+                        rolledNumber = 2
+                    elif currentColour == Color.GREEN:
+                        rolledNumber = 3
+                    elif currentColour == Color.RED:
+                        rolledNumber = 4
+                    elif currentColour == Color.BLUE:
+                        rolledNumber = 5
 
-                #print("You Spun a " + str(rolledNumber) + "!")
-                spinComplete = True
-                stdout.buffer.write(b"player_moved"+str(rolledNumber))
-                secondStage = False
-                hub.display.text(str(rolledNumber),2000)
+                    #print("You Spun a " + str(rolledNumber) + "!")
+                    spinComplete = True
+                    stdout.buffer.write(b"player_moved"+str(rolledNumber))
+                    secondStage = False
+                    hub.display.text(str(rolledNumber),2000)
 
         if message == b"video4_finished" or message == b"video5_finished" or message == b"video6_finished" or message == b"video7_finished" or message == b"video8_finished":
             thirdStage = True

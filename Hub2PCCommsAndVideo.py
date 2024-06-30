@@ -11,6 +11,7 @@ pip install bleak==0.22.1
 pip install python-vlc==3.0.20123
 pip install async-tkinter-loop==0.9.3
 pip install pillow==10.3.0
+pip install pyserial==3.5
 hub to pc comms example - https://pybricks.com/projects/tutorials/wireless/hub-to-device/pc-communication/
 video player example - https://www.makeuseof.com/python-video-media-player-how-to-build/
 
@@ -31,6 +32,7 @@ import asyncio
 from bleak import BleakScanner, BleakClient
 from async_tkinter_loop import async_handler, async_mainloop
 import msvcrt
+import serial
 
 UART_SERVICE_UUID = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E"
 UART_RX_CHAR_UUID = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E"
@@ -43,6 +45,11 @@ rx_char = None
 client = None
 mediaCanvasButton = None
 
+try:
+    arduino = serial.Serial(port = 'COM12', baudrate=9600, timeout=0)
+except:
+    print("Couldn't connect to Ardunio")
+
 class MediaPlayerApp(tk.Tk):
     
     def __init__(self):
@@ -52,7 +59,7 @@ class MediaPlayerApp(tk.Tk):
         self.geometry("1920x1080")#800x600
         self.configure(bg="black")
         self.initialize_player()  
-        self.initialize_event_handler()  
+        self.initialize_event_handler()
 
     def VideoFinished(event):
         print("Video " + str(app.current_video) + " finished")
@@ -84,6 +91,7 @@ class MediaPlayerApp(tk.Tk):
             self.play_video()
         elif self.current_video == 2:
             self.stop()
+            self.send_message_to_arduino("Red")
             self.current_file = r"Resources/New Videos/vid_IntroShort.mp4"
             self.play_video()
             #self.after(3000, self.start_timer)
@@ -93,34 +101,42 @@ class MediaPlayerApp(tk.Tk):
             self.play_video()
         elif self.current_video == 4:
             self.stop()
+            self.send_message_to_arduino("Yellow")
             self.current_file = r"Resources/New Videos/vid_Spun1.mp4"
             self.play_video()
         elif self.current_video == 5:
             self.stop()
+            self.send_message_to_arduino("Purple")
             self.current_file = r"Resources/New Videos/vid_Spun2.mp4"
             self.play_video()
         elif self.current_video == 6:
             self.stop()
+            self.send_message_to_arduino("Red")
             self.current_file = r"Resources/New Videos/vid_Spun3.mp4"
             self.play_video()
         elif self.current_video == 7:
             self.stop()
+            self.send_message_to_arduino("DarkBlue")
             self.current_file = r"Resources/New Videos/vid_Spun4.mp4"
             self.play_video()
         elif self.current_video == 8:
             self.stop()
+            self.send_message_to_arduino("Yellow")
             self.current_file = r"Resources/New Videos/vid_Spun5.mp4"
             self.play_video()
         elif self.current_video == 9:
             self.stop()
+            self.send_message_to_arduino("DarkBlue")
             self.current_file = r"Resources/New Videos/vid_CardBlue.mp4"
             self.play_video()
         elif self.current_video == 10:
             self.stop()
+            self.send_message_to_arduino("Yellow")
             self.current_file = r"Resources/New Videos/vid_CardYellow.mp4"
             self.play_video()
         elif self.current_video == 11:
             self.stop()
+            self.send_message_to_arduino("Red")
             self.current_file = r"Resources/New Videos/vid_CardRed.mp4"
             self.play_video() 
 
@@ -135,11 +151,6 @@ class MediaPlayerApp(tk.Tk):
         self.main_screen = False
         self.spin_label = Label(self, borderwidth=0, text='Not spun yet', font=("Arial", 60, "bold"), fg='white', bg='black')
 
-    def final_image(event):
-        photo = tk.PhotoImage(r'Resources/board_fusion.jpg')
-        image = tk.Label(image=photo)
-        image.pack()
-
     def start_game(event):
         app.media_canvas.unbind("<Button-1>", mediaCanvasButton)
         app.current_video = 2
@@ -149,6 +160,7 @@ class MediaPlayerApp(tk.Tk):
    
     def start(self):
         print('start')
+        self.send_message_to_arduino("Sound3")
         self.start_button.destroy()
         if self.main_screen == False:        
             mediaCanvasButton = self.media_canvas.bind("<Button-1>", self.start_game.__func__)
@@ -177,6 +189,14 @@ class MediaPlayerApp(tk.Tk):
         if sec < 10:
             return("{0}:0{1}".format(int(mins),int(sec)))
         return("{0}:{1}".format(int(mins),int(sec)))  
+    
+    def send_message_to_arduino(self, value):
+        print("LED colour: " + value)
+        try:
+            arduino.write(str.encode(value))
+            print("LED sent")
+        except Exception as e:
+            print("Not connected to Ardunio: " + str(e))
         
     def play_video(self):
         if not self.playing_video:
@@ -213,15 +233,16 @@ def handle_rx(_, data: bytearray):
         app.current_video = 4
     elif data.find(b'Play_Video_BlueCard') >= 0:
         app.current_video = 9
-        app.final_image()
+        #app.timer.destroy()
     elif data.find(b'Play_Video_YellowCar') >= 0:
         app.current_video = 10
-        app.final_image()
+        #app.timer.destroy()
     elif data.find(b'Play_Video_RedCard') >= 0:
         app.current_video = 11
-        app.final_image()
+        #app.timer.destroy()
     elif data.find(b'Start_Timer') >= 0:
         app.start_timer()
+        app.send_message_to_arduino("Green")
     else:
         spinNumber = data.decode()
         spinNumber = spinNumber[12]
